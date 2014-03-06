@@ -7043,11 +7043,26 @@ jQuery.extend({
 			// If a hook was provided, use that value, otherwise just set the specified value
 			if ( !hooks || !("set" in hooks) || (value = hooks.set( elem, value, extra )) !== undefined ) {
 
+				// MISHA PATCH: Always use !important
+				name = name.replace(/([A-Z])/g, "-$1").toLowerCase();
+				if ( "setProperty" in style ) style.setProperty( name, value, "important" );
+				else {
+					var newStyle = "";
+					if (style.cssText.length && !style.cssText.match(/;(\s+)?$/)) newStyle += ";";
+					newStyle += name + ": " + value + " !important;";
+					style.cssText += newStyle;
+					// Don't need for IE8, but hold onto this in case older IE's need it.
+					// var oldStyle = elem.getAttribute("style") || "";
+					// if (oldStyle.length && !oldStyle.match(/;(\s+)?$/)) oldStyle += ";";
+					// var newStyle = oldStyle + name + ": " + value + " !important;";
+					// elem.setAttribute("style", newStyle);
+				}
+
 				// Wrapped to prevent IE from throwing errors when 'invalid' values are provided
 				// Fixes bug #5509
-				try {
-					style[ name ] = value;
-				} catch(e) {}
+				// try {
+				//   style[ name ] = value;
+				// } catch(e) {}
 			}
 
 		} else {
